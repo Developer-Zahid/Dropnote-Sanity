@@ -1,0 +1,27 @@
+---
+const { integrations } = Astro.props;
+---
+
+<section class="about-us u-spacing-block u-spacing-inline">
+  <div class="container">
+    <div class="section-header u-display-flex-vertical">
+      {integrations.eyebrow && <div class="section-eyebrow u-text-primary text-regular">{integrations.eyebrow}</div>}
+      <h2 class="section-title heading-h3">{integrations.heading}</h2>
+    </div>
+    
+    <div class="integrations-grid u-display-grid">
+      <!-- We map through the integration cards array from Sanity -->
+      {integrations.integrationCards?.map((integration: any) => (
+        <div class="integrations-card u-display-flex">
+          <div class="integrations-card_icon u-display-flex">
+            <img src={integration.logoUrl} loading="lazy" alt={integration.name} />
+          </div>
+          <div class="integrations-card_content u-display-flex-vertical">
+            <h3 class="u-text-dark heading-h5">{integration.name}</h3>
+            <p class="text-sm">{integration.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

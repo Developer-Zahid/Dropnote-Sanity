@@ -1,15 +1,31 @@
 import {defineField, defineType} from 'sanity'
 
-export const landingPageType = defineType({
-  name: 'landingPage',
-  title: 'Landing Page',
+export const homePageType = defineType({
+  name: 'homePage',
+  title: 'Home Page',
   type: 'document',
+  preview: {
+    select: {
+      title: 'seo.metaTitle',
+    },
+    prepare({ title }) {
+      return {
+        title: title || 'Untitled Page Name'
+      }
+    }
+  },
   fields: [
+    // 0. SEO SECTION
     defineField({
-      name: 'title',
-      title: 'Internal Document Title',
-      type: 'string',
-      description: 'Used to identify this page in the Sanity Studio (e.g., "Home Page - Draft 1")',
+      name: 'seo',
+      title: 'SEO & Metadata',
+      type: 'object',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        { name: 'metaTitle', title: 'Meta Title', type: 'string', description: 'Ideal length is 50–60 characters.' },
+        { name: 'metaDescription', title: 'Meta Description', type: 'text', rows: 3, description: 'Ideal length is 150-160 characters.' },
+        { name: 'openGraphImage', title: 'Open Graph Image', type: 'image', description: 'Image displayed when sharing the link on social media (1200x630px recommended).' }
+      ]
     }),
     
     // 1. HERO SECTION

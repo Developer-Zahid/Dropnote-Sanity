@@ -1,5 +1,7 @@
-import { landingPageType } from "./landingPage";
+import { homePageType } from "./homePage";
+import { siteSettingsType } from "./siteSettings";
 
 export const schemaTypes = [
-    landingPageType,
+    homePageType,
+    siteSettingsType,
 ]

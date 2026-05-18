@@ -1,0 +1,107 @@
+---
+// 1. Import the Image and getImage components from Astro
+import { Image, getImage } from 'astro:assets';
+
+// Import the local images directly
+import spacing1DesktopSrc from '../assets/images/spacing-1.png';
+import spacing1MobileSrc from '../assets/images/spacing-one-mobile.png';
+import spacing2DesktopSrc from '../assets/images/spacing-2.png';
+import spacing2MobileSrc from '../assets/images/spacing-two-mobile.png';
+import divTagSrc from '../assets/images/div-tag.svg';
+import scaleLeftSrc from '../assets/images/scale-left.png';
+import scaleRightSrc from '../assets/images/scale-right.png';
+
+const { hero } = Astro.props;
+
+// 2. Generate optimized image sources for Art Direction (Desktop vs Mobile)
+// We pass the imported variables to 'src', and we no longer need 'inferSize'
+const spacing1Desktop = await getImage({ src: spacing1DesktopSrc, format: 'webp' });
+const spacing1Mobile = await getImage({ src: spacing1MobileSrc, format: 'webp' });
+
+const spacing2Desktop = await getImage({ src: spacing2DesktopSrc, format: 'webp' });
+const spacing2Mobile = await getImage({ src: spacing2MobileSrc, format: 'webp' });
+---
+
+<header class="section-home-hero cc-bottom-0 u-spacing-block-md u-spacing-inline">
+  <div class="container cc-1280 u-position-relative">
+    <div class="container cc-1166">
+      <div class="hero-content-wrapper u-display-flex-vertical">
+        <div class="hero-content u-text-center">
+          
+          {hero.eyebrow && <div class="hero-eyebrow u-text-primary caption-lg">{hero.eyebrow}</div>}
+          
+          <div class="hero-title-wrap u-position-relative">
+            <h1 class="hero-title u-text-wrap-balance u-position-relative u-text-center heading-h1">{hero.heading}</h1>
+            <Image 
+              src={divTagSrc}
+              loading="eager"
+              alt="h1 tag"
+              class="hero-title-tag u-select-none"
+            />
+            <div class="hero-title-ellipse cc-left-bottom u-select-none"></div>
+            <div class="hero-title-ellipse cc-right-bottom u-select-none"></div>
+          <div class="hero-title-ellipse cc-top-right u-select-none"></div>
+        </div>
+        
+        <!-- Art Direction using standard <picture> and Astro's getImage() -->
+        <picture class="u-select-none">
+          <source media="(min-width: 480px)" srcset={spacing1Desktop.src} type="image/webp" />
+          <img src={spacing1Mobile.src} alt="" loading="eager" />
+        </picture>
+        
+        {hero.subheading && <p class="hero-text text-lg u-text-center">{hero.subheading}</p>}
+        
+        <!-- Second spacing image with Art Direction -->
+        <picture class="u-select-none">
+          <source media="(min-width: 480px)" srcset={spacing2Desktop.src} type="image/webp" />
+          <img src={spacing2Mobile.src} alt="" loading="eager" />
+        </picture>
+        
+        <div class="hero-cta-wrapper u-position-relative">
+          <div class="cta-form-block w-form">
+              <form id="email-form" name="email-form" data-name="Email Form" method="get" class="cta-form">
+                <input class="cta-form-field cc-hero w-input" maxlength="256" name="email" data-name="Email" placeholder="What’s your work email " type="email" id="email" required="" />
+                <input type="submit" data-wait="Please wait..." class="cta-form-button cc-hero w-button u-weight-500 text-md" value={hero.ctaText || "Join the Waitlist"} />
+              </form>
+              <div class="form-success-card w-form-done u-hide">
+                <div>Thank you! You are in early bird list</div>
+              </div>
+              <div class="w-form-fail u-hide">
+                <div>Oops! Something went wrong while submitting the form.</div>
+              </div>
+            </div>
+            <div class="hero-title-ellipse cc-left-bottom u-select-none"></div>
+            <div class="hero-title-ellipse cc-right-bottom u-select-none"></div>
+            <div class="hero-title-ellipse cc-top-right u-select-none"></div>
+            <div class="hero-title-ellipse cc-top-left u-select-none"></div>
+          </div>
+        </div>
+        
+        {hero.imageUrl && (
+          <figure class="hero-figure u-overflow-hidden u-position-relative">
+            <Image 
+              src={hero.imageUrl} 
+              width={1140} 
+              height={631} 
+              loading="eager" 
+              alt="Dropnote dashboard" 
+              class="u-cover" 
+            />
+          </figure>
+        )}
+      </div>
+    </div>
+    <Image 
+        src={scaleLeftSrc}
+        loading="eager"
+        alt=""
+        class="header-scale-left u-select-none"
+      />
+    <Image 
+        src={scaleRightSrc}
+        loading="eager"
+        alt=""
+        class="header-scale-right u-select-none"
+      />
+  </div>
+</header>

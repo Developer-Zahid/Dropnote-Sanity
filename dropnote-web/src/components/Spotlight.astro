@@ -1,0 +1,19 @@
+---
+const { highlight } = Astro.props;
+---
+
+<section class="section-spotlight u-spacing-block-md u-spacing-inline">
+  <div class="container">
+    <div class="section-header u-display-flex-vertical">
+      {highlight.eyebrow && <div class="section-eyebrow u-text-primary text-regular">{highlight.eyebrow}</div>}
+      <h2 class="section-title heading-h3">{highlight.heading}</h2>
+    </div>
+    
+    {highlight.imageUrl && (
+      <figure class="spotlight_figure u-overflow-hidden u-position-relative">
+        <!-- Sanity Dynamic Highlight Image -->
+        <img src={highlight.imageUrl} loading="lazy" width="1140" height="803" alt="Smart Inspect feature" class="u-cover" />
+      </figure>
+    )}
+  </div>
+</section>

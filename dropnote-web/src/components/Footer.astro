@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+
+// Accept the logo url as a prop
+const { logoUrl } = Astro.props;
+
+// Set a default fallback image if the CMS field is empty
+const defaultLogo = "/assets/images/footer-logo.svg";
+const finalLogo = logoUrl || defaultLogo;
+---
+
+<footer class="footer-component u-spacing-inline">
+  <div class="container cc-1040">
+    <div class="footer-content u-display-flex">
+      <div class="footer-logo-block u-display-flex">
+        <Image 
+            src={finalLogo}
+            width={16}
+            height={16}
+            loading="lazy"
+            alt="Dropnote Logo"
+          />
+        <div class="text-sm text-sm">2026 Dropnote LLC</div>
+      </div>
+      <div role="list" class="footer-social-block u-display-flex">
+        <a role="listitem" href="https://www.linkedin.com/in/moshfequrr" target="_blank" class="footer-social-link w-inline-block">
+          <div class="text-sm">Linkedin</div>
+        </a>
+        <a role="listitem" href="/privacy-policy" class="footer-social-link w-inline-block">
+          <div class="text-sm">Privacy policy</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

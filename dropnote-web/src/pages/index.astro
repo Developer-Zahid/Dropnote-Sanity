@@ -1,17 +1,96 @@
 ---
+import { sanityClient } from "sanity:client";
+import '../assets/styles/global.css'; // Make sure to place your provided CSS here!
 
+// Import all of our modular sections
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import Features from '../components/Features.astro';
+import Spotlight from '../components/Spotlight.astro';
+import Integrations from '../components/Integrations.astro';
+import BottomCta from '../components/BottomCta.astro';
+import Footer from '../components/Footer.astro';
+
+// Expanded GROQ Query mapping to fetch both Landing Page AND Site Settings!
+const query = `{
+  "pageData": *[_type == "homePage"][0]{
+    title,
+    seo {
+      metaTitle,
+      metaDescription,
+      "ogImageUrl": openGraphImage.asset->url
+    },
+    hero {
+      eyebrow, heading, subheading, ctaText,
+      "imageUrl": heroImage.asset->url
+    },
+    features {
+      eyebrow, heading,
+      featureCards[]{
+        title, description, linkText,
+        "iconUrl": icon.asset->url
+      }
+    },
+    highlight {
+      eyebrow, heading,
+      "imageUrl": featureImage.asset->url
+    },
+    integrations {
+      eyebrow, heading,
+      integrationCards[]{
+        name, description,
+        "logoUrl": logo.asset->url
+      }
+    },
+    bottomCta {
+      heading, subheading, ctaText
+    }
+  },
+  "settings": *[_type == "siteSettings"][0]{
+    "faviconUrl": favicon.asset->url,
+    "navbarLogoUrl": navbarLogo.asset->url,
+    "footerLogoUrl": footerLogo.asset->url
+  }
+}`;
+
+const data = await sanityClient.fetch(query);
+const pageData = data.pageData;
+const settings = data.settings || {};
 ---
 
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Dynamic SEO and Meta Tags -->
+    <title>{pageData?.seo?.metaTitle || pageData?.title || "Dropnote"}</title>
+    <meta name="description" content={pageData?.seo?.metaDescription || "Dropnote - Visual feedback tool"} />
+    {pageData?.seo?.ogImageUrl && <meta property="og:image" content={pageData.seo.ogImageUrl} />}
+    
+    <!-- Dynamic Favicons -->
+    <link rel="shortcut icon" href={settings.faviconUrl || "/favicon.ico"} />
+</head>
+<body>
+  <div class="page-wrapper">
+    <Navbar logoUrl={settings.navbarLogoUrl} />
+
+    <main class="main">
+      <!-- Dynamic Sections! We pass the Sanity data as props to each component -->
+      {pageData?.hero && <Hero hero={pageData.hero} />}
+      
+      {pageData?.features && <Features features={pageData.features} />}
+      
+      {pageData?.highlight && <Spotlight highlight={pageData.highlight} />}
+      
+      {pageData?.integrations && <Integrations integrations={pageData.integrations} />}
+      
+      {pageData?.bottomCta && <BottomCta bottomCta={pageData.bottomCta} />}
+    </main>
+    
+    <!-- Static Footer -->
+    <Footer logoUrl={settings.footerLogoUrl} />
+  </div>
+</body>
 </html>

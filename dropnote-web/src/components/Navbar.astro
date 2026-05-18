@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+
+// Accept the logo url as a prop from the parent page
+const { logoUrl } = Astro.props;
+
+// Set a default fallback image path pointing directly to the public folder
+const finalLogo = logoUrl || "/assets/images/dropnote-logo.svg";
+---
+
+<nav class="nav-component u-spacing-inline">
+  <div class="container">
+    <div class="nav-content u-display-flex">
+      <a href="/" aria-current="page" class="logo-link-block">
+        <Image 
+            src={finalLogo}
+            width={168}
+            height={32}
+            loading="eager"
+            alt="Dropnote Logo"
+            class="nav-logo"
+          />
+      </a>
+      <div class="nav-button">
+        <a href="#join-the-waitlist" class="button cc-nav">
+          <div>Join the waitlist</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>

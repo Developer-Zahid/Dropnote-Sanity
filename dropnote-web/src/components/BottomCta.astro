@@ -1,0 +1,30 @@
+---
+const { bottomCta } = Astro.props;
+---
+
+<section id="join-the-waitlist" class="section-cta u-spacing-block-sm u-spacing-inline">
+  <div class="container">
+    <div class="cta-component">
+      <div class="cta-content u-text-center u-display-flex-vertical">
+        <h2 class="cta-title u-text-wrap-balance heading-h2">{bottomCta.heading}</h2>
+        {bottomCta.subheading && <p class="cta-text text-md">{bottomCta.subheading}</p>}
+        
+        <div class="cta-form-block w-form">
+          <form id="email-form-bottom" name="email-form-bottom" data-name="Email Form" method="get" class="cta-form cc-cta">
+            <input class="cta-form-field w-input" maxlength="256" name="email" data-name="Email" placeholder="What’s your work email " type="email" required="" />
+            <input type="submit" data-wait="Please wait..." class="cta-form-button w-button u-weight-500 text-md" value={bottomCta.ctaText || "Join the Waitlist"} />
+          </form>
+          <div class="form-success-card w-form-done u-hide">
+            <div>Thank you! You are in early bird list</div>
+          </div>
+          <div class="w-form-fail u-hide">
+            <div>Oops! Something went wrong while submitting the form.</div>
+          </div>
+        </div>
+      </div>
+      <img src="https://cdn.prod.website-files.com/6901dbcdf7f25a7a966364be/69049d6310b3a306f55c37de_pattern.png" loading="lazy" alt="" class="cta-pattern u-select-none" />
+      <img src="https://cdn.prod.website-files.com/6901dbcdf7f25a7a966364be/6904a492125ea0a96501cfac_pattern-2.png" loading="lazy" alt="" class="cta-gradient-one u-select-none" />
+      <img src="https://cdn.prod.website-files.com/6901dbcdf7f25a7a966364be/6904a5523a9f2c9b041ec034_pattern-3.png" loading="lazy" alt="" class="cta-gradient-two u-select-none" />
+    </div>
+  </div>
+</section>

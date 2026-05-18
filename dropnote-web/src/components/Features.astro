@@ -1,0 +1,35 @@
+---
+const { features } = Astro.props;
+---
+
+<section class="section-features u-spacing-block-md u-spacing-inline">
+  <div class="container">
+    <div class="section-header u-display-flex-vertical">
+      <!-- Sanity CMS Data -->
+      {features.eyebrow && <div class="section-eyebrow u-text-primary text-regular">{features.eyebrow}</div>}
+      { features.heading && <h2 class="section-title heading-h3">{features.heading}</h2> }
+      { features.subheading && <p class="section-subtitle text-regular">{features.subheading}</p> }
+    </div>
+    
+    <div class="feature_grid u-display-grid">
+      <!-- We map through the feature cards array from Sanity -->
+      {features.featureCards?.map((card: any) => (
+        <div class="feature_card u-display-flex">
+          <div class="feature_card_icon u-display-flex">
+            <img src={card.iconUrl} loading="lazy" alt="" class="feature_card_icon-svg" />
+          </div>
+          <div class="feature_card_content u-display-flex-vertical">
+            <h3 class="feature_card_title heading-h5">{card.title}</h3>
+            <p class="feature_card_text text-regular">{card.description}</p>
+            <a href="#join-the-waitlist" class="feature_card_link w-inline-block u-display-flex">
+              <div class="u-weight-500 text-md">{card.linkText || "Join the waitlist >"}</div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M5.25 10.5L8.75 7L5.25 3.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
