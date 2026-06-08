@@ -20,30 +20,32 @@ const query = `{
       metaDescription,
       "ogImageUrl": openGraphImage.asset->url
     },
-    hero {
-      eyebrow, heading, subheading, ctaText,
-      "imageUrl": heroImage.asset->url
-    },
-    features {
-      eyebrow, heading,
-      featureCards[]{
-        title, description, linkText,
-        "iconUrl": icon.asset->url
+    pageContent {
+      hero {
+        eyebrow, heading, subheading, ctaText,
+        "imageUrl": heroImage.asset->url
+      },
+      features {
+        eyebrow, heading,
+        featureCards[]{
+          title, description, linkText,
+          "iconUrl": icon.asset->url
+        }
+      },
+      highlight {
+        eyebrow, heading,
+        "imageUrl": featureImage.asset->url
+      },
+      integrations {
+        eyebrow, heading,
+        integrationCards[]{
+          name, description,
+          "logoUrl": logo.asset->url
+        }
+      },
+      bottomCta {
+        heading, subheading, ctaText
       }
-    },
-    highlight {
-      eyebrow, heading,
-      "imageUrl": featureImage.asset->url
-    },
-    integrations {
-      eyebrow, heading,
-      integrationCards[]{
-        name, description,
-        "logoUrl": logo.asset->url
-      }
-    },
-    bottomCta {
-      heading, subheading, ctaText
     }
   },
   "settings": *[_type == "siteSettings"][0]{
@@ -78,15 +80,15 @@ const settings = data.settings || {};
 
     <main class="main">
       <!-- Dynamic Sections! We pass the Sanity data as props to each component -->
-      {pageData?.hero && <Hero hero={pageData.hero} />}
+      {pageData?.pageContent?.hero && <Hero hero={pageData.pageContent.hero} />}
       
-      {pageData?.features && <Features features={pageData.features} />}
+      {pageData?.pageContent?.features && <Features features={pageData.pageContent.features} />}
       
-      {pageData?.highlight && <Spotlight highlight={pageData.highlight} />}
+      {pageData?.pageContent?.highlight && <Spotlight highlight={pageData.pageContent.highlight} />}
       
-      {pageData?.integrations && <Integrations integrations={pageData.integrations} />}
+      {pageData?.pageContent?.integrations && <Integrations integrations={pageData.pageContent.integrations} />}
       
-      {pageData?.bottomCta && <BottomCta bottomCta={pageData.bottomCta} />}
+      {pageData?.pageContent?.bottomCta && <BottomCta bottomCta={pageData.pageContent.bottomCta} />}
     </main>
     
     <!-- Static Footer -->
