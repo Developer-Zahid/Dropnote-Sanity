@@ -10,7 +10,6 @@ export default defineConfig({
             dataset: 'production',
             useCdn: false,
             apiVersion: '2026-05-18',
-            studioBasePath: '/admin',
             stega: {
                 studioUrl: 'http://localhost:3333',
             },

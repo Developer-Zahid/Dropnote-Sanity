@@ -1,7 +1,7 @@
 ---
 import { urlForImage } from "../sanity/lib/url-for-image";
 
-const { asset, alt, width, height } = Astro.props.node;
+const { asset, alt } = Astro.props.node;
 
 // Generate optimized versions of the uploaded rich text images
 const url = urlForImage(asset).url();
