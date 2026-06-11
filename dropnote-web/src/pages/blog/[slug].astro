@@ -1,0 +1,183 @@
+---
+import type { SanityDocument } from "@sanity/client";
+import { loadQuery } from "../../sanity/lib/load-query";
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import Navbar from "../../components/Navbar.astro";
+import Footer from "../../components/Footer.astro";
+import PortableText from "../../components/PortableText.astro";
+
+// 1. Generate Static Paths during SSG build step using the loadQuery wrapper
+export async function getStaticPaths() {
+  const { data: posts } = await loadQuery<SanityDocument[]>({
+    query: `*[_type == "post" && defined(slug.current)]`,
+  });
+
+  return posts.map(({ slug }) => ({
+    params: { slug: slug.current },
+  }));
+}
+
+// 2. Fetch specific blog post data and core layout settings using loadQuery
+const { slug } = Astro.params;
+
+const query = `{
+  "post": *[_type == "post" && slug.current == $slug][0] {
+    title,
+    publishedAt,
+    excerpt,
+    body,
+    "imageUrl": mainImage.asset->url,
+    "author": author->{ name, "imageUrl": image.asset->url }
+  },
+  "settings": *[_type == "siteSettings"][0]{
+    "navbarLogoUrl": navbarLogo.asset->url,
+    "footerLogoUrl": footerLogo.asset->url
+  }
+}`;
+
+const { data } = await loadQuery<any>({ 
+  query, 
+  params: { slug } 
+});
+
+const post = data?.post;
+const settings = data?.settings || {};
+---
+
+<Layout>
+  <Navbar logoUrl={settings?.navbarLogoUrl} />
+
+  {post && (
+    <article class="blog-detail u-spacing-block">
+      <div class="container cc-1040">
+        <!-- Back Link -->
+        <a href="/blog" class="back-link u-weight-500 u-display-flex">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-right: 0.5rem;">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to Blog
+        </a>
+
+        <!-- Main Header -->
+        <header class="detail-header">
+          <time datetime={post.publishedAt} class="caption-lg u-text-primary">
+            {new Date(post.publishedAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+          
+          <h1 class="heading-h1 detail-title">{post.title}</h1>
+          <p class="detail-excerpt text-lg">{post.excerpt}</p>
+          
+          {post.author && (
+            <div class="detail-author u-display-flex">
+              {post.author.imageUrl && (
+                <Image 
+                  src={post.author.imageUrl} 
+                  width={40} 
+                  height={40} 
+                  loading="eager" 
+                  alt={post.author.name}
+                  class="detail-author-avatar"
+                />
+              )}
+              <div class="detail-author-info">
+                <span class="detail-author-label">Written by</span>
+                <strong class="detail-author-name u-text-dark">{post.author.name}</strong>
+              </div>
+            </div>
+          )}
+        </header>
+
+        <!-- Main Image -->
+        {post.imageUrl && (
+          <figure class="detail-banner-wrap u-overflow-hidden u-position-relative">
+            <Image 
+              src={post.imageUrl} 
+              width={1040} 
+              height={585} 
+              loading="eager" 
+              alt={post.title} 
+              class="u-cover" 
+            />
+          </figure>
+        )}
+
+        <!-- Compiled Block Content -->
+        <div class="detail-body-wrapper">
+          <PortableText portableText={post.body} />
+        </div>
+      </div>
+    </article>
+  )}
+
+  <Footer logoUrl={settings?.footerLogoUrl} />
+</Layout>
+
+<style>
+  .blog-detail {
+    background-color: #ffffff;
+  }
+  .back-link {
+    color: var(--neutral--navy-blue);
+    align-items: center;
+    margin-bottom: 2.5rem;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+  }
+  .back-link:hover {
+    color: var(--neutral--primary-blue);
+  }
+  .detail-header {
+    margin-bottom: 3.5rem;
+  }
+  .detail-title {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    text-wrap: balance;
+  }
+  .detail-excerpt {
+    color: var(--neutral--light-gray);
+    max-width: 80ch;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  .detail-author {
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .detail-author-avatar {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .detail-author-info {
+    display: flex;
+    flex-flow: column;
+    line-height: 1.3;
+  }
+  .detail-author-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--neutral--light-gray);
+    letter-spacing: 0.05em;
+  }
+  .detail-author-name {
+    font-size: 1rem;
+  }
+  .detail-banner-wrap {
+    padding-top: 56.25%;
+    border-radius: 1rem;
+    background-color: var(--neutral--white-smoke);
+    margin-bottom: 4rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+  }
+  .detail-body-wrapper {
+    max-width: 740px;
+    margin: 0 auto;
+  }
+</style>

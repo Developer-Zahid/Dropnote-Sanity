@@ -1,0 +1,43 @@
+---
+import { VisualEditing } from "@sanity/astro/visual-editing";
+import '../assets/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  faviconUrl?: string;
+  visualEditingEnabled?: boolean;
+}
+
+const visualEditingEnabled = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === "true";
+
+const { 
+  title = "Dropnote", 
+  description = "Dropnote - Visual feedback tool", 
+  ogImage, 
+  faviconUrl = "/favicon.ico"
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Dynamic SEO and Meta Tags -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    
+    <!-- Dynamic Favicons -->
+    <link rel="shortcut icon" href={faviconUrl} />
+</head>
+<body>
+  <div class="page-wrapper">
+    <slot />
+  </div>
+  <VisualEditing enabled={visualEditingEnabled} zIndex={1000} />
+</body>
+</html>

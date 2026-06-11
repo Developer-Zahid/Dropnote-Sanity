@@ -1,0 +1,24 @@
+---
+import { urlForImage } from "../sanity/lib/url-for-image";
+
+const { asset, alt } = Astro.props.node;
+
+// Generate optimized versions of the uploaded rich text images
+const url = urlForImage(asset).url();
+const webpUrl = urlForImage(asset).format("webp").url();
+---
+
+<picture class="portable-text-picture">
+  <source srcset={webpUrl} type="image/webp" />
+  <img src={url} alt={alt || "Blog content illustration"} loading="lazy" />
+</picture>
+
+<style>
+  .portable-text-picture img {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 2rem 0;
+    display: block;
+  }
+</style>

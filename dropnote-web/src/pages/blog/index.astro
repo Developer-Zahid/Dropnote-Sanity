@@ -1,0 +1,143 @@
+---
+import { sanityClient } from "sanity:client";
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import Navbar from "../../components/Navbar.astro";
+import Footer from "../../components/Footer.astro";
+
+// Fetch posts (with associated author name) alongside dynamic navbar/footer logos
+const query = `{
+  "posts": *[_type == "post"] | order(publishedAt desc) {
+    title,
+    "slug": slug.current,
+    publishedAt,
+    excerpt,
+    "imageUrl": mainImage.asset->url,
+    "authorName": author->name
+  },
+  "settings": *[_type == "siteSettings"][0]{
+    "navbarLogoUrl": navbarLogo.asset->url,
+    "footerLogoUrl": footerLogo.asset->url
+  }
+}`;
+
+const { posts, settings } = await sanityClient.fetch(query);
+---
+
+<Layout>
+  <Navbar logoUrl={settings?.navbarLogoUrl} />
+  
+  <main class="blog-archive u-spacing-block">
+    <div class="container">
+      <header class="section-header u-text-center u-mx-auto" style="max-width: 650px;">
+        <span class="caption-lg u-text-primary">RESOURCES</span>
+        <h1 class="heading-h2" style="margin-top: 1rem; margin-bottom: 1rem;">Dropnote Insights</h1>
+        <p class="text-md">Guides, design templates, and workflow strategies written by the core development team.</p>
+      </header>
+
+      <div class="blog-grid">
+        {posts && posts.map((post: any) => (
+          <article class="blog-card">
+            {post.imageUrl && (
+              <a href={`/blog/${post.slug}`} class="blog-card-img-link">
+                <figure class="blog-card-image-wrap u-overflow-hidden u-position-relative">
+                  <Image 
+                    src={post.imageUrl} 
+                    width={550} 
+                    height={310} 
+                    alt={post.title} 
+                    class="u-cover"
+                    loading="eager"
+                  />
+                </figure>
+              </a>
+            )}
+            <div class="blog-card-content">
+              <div class="blog-card-meta">
+                <time datetime={post.publishedAt} class="text-sm u-text-primary">
+                  {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+                {post.authorName && <span class="blog-card-author">by {post.authorName}</span>}
+              </div>
+              <h2 class="heading-h4 blog-card-title">
+                <a href={`/blog/${post.slug}`}>{post.title}</a>
+              </h2>
+              <p class="text-regular blog-card-excerpt">{post.excerpt}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </main>
+
+  <Footer logoUrl={settings?.footerLogoUrl} />
+</Layout>
+
+<style>
+  .blog-archive {
+    background-color: #fafcff;
+  }
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 3rem 2rem;
+    margin-top: 4rem;
+  }
+  .blog-card {
+    background: var(--neutral--white);
+    border: 1px solid var(--neutral--primary-50);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    flex-flow: column;
+    box-shadow: 0 4px 20px rgba(15, 106, 209, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(15, 106, 209, 0.08);
+  }
+  .blog-card-image-wrap {
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    background-color: var(--neutral--white-smoke);
+  }
+  .blog-card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+  }
+  .blog-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .blog-card-author {
+    font-size: 0.875rem;
+    color: var(--neutral--light-gray);
+  }
+  .blog-card-title {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  .blog-card-title a {
+    color: var(--brand--heading);
+    transition: color 0.2s ease;
+  }
+  .blog-card-title a:hover {
+    color: var(--neutral--primary-blue);
+  }
+  .blog-card-excerpt {
+    color: var(--neutral--light-gray);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: auto;
+  }
+</style>

@@ -1,6 +1,6 @@
 ---
 import { sanityClient } from "sanity:client";
-import '../assets/styles/global.css'; // Make sure to place your provided CSS here!
+import Layout from '../layouts/Layout.astro';
 
 // Import all of our modular sections
 import Navbar from '../components/Navbar.astro';
@@ -61,25 +61,14 @@ const settings = data.settings || {};
 ---
 
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Dynamic SEO and Meta Tags -->
-    <title>{pageData?.seo?.metaTitle || pageData?.title || "Dropnote"}</title>
-    <meta name="description" content={pageData?.seo?.metaDescription || "Dropnote - Visual feedback tool"} />
-    {pageData?.seo?.ogImageUrl && <meta property="og:image" content={pageData.seo.ogImageUrl} />}
-    
-    <!-- Dynamic Favicons -->
-    <link rel="shortcut icon" href={settings.faviconUrl || "/favicon.ico"} />
-</head>
-<body>
-  <div class="page-wrapper">
+<Layout
+  title={pageData?.seo?.metaTitle || pageData?.title}
+  description={pageData?.seo?.metaDescription}
+  ogImage={pageData?.seo?.ogImageUrl}
+  faviconUrl={settings.faviconUrl}
+>
     <Navbar logoUrl={settings.navbarLogoUrl} />
-
     <main class="main">
-      <!-- Dynamic Sections! We pass the Sanity data as props to each component -->
       {pageData?.pageContent?.hero && <Hero hero={pageData.pageContent.hero} />}
       
       {pageData?.pageContent?.features && <Features features={pageData.pageContent.features} />}
@@ -90,9 +79,5 @@ const settings = data.settings || {};
       
       {pageData?.pageContent?.bottomCta && <BottomCta bottomCta={pageData.pageContent.bottomCta} />}
     </main>
-    
-    <!-- Static Footer -->
     <Footer logoUrl={settings.footerLogoUrl} />
-  </div>
-</body>
-</html>
+</Layout>
