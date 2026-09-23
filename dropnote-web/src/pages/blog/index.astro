@@ -14,18 +14,14 @@ const query = `{
     excerpt,
     "imageUrl": mainImage.asset->url,
     "authorName": author->name
-  },
-  "settings": *[_type == "siteSettings"][0]{
-    "navbarLogoUrl": navbarLogo.asset->url,
-    "footerLogoUrl": footerLogo.asset->url
   }
 }`;
 
-const { data: { posts, settings } } = await loadQuery<any>({ query });
+const { data: { posts } } = await loadQuery<any>({ query });
 ---
 
 <Layout>
-  <Navbar logoUrl={settings?.navbarLogoUrl} />
+  <Navbar />
   
   <main class="blog-archive u-spacing-block">
     <div class="container">
@@ -74,7 +70,7 @@ const { data: { posts, settings } } = await loadQuery<any>({ query });
     </div>
   </main>
 
-  <Footer logoUrl={settings?.footerLogoUrl} />
+  <Footer />
 </Layout>
 
 <style>

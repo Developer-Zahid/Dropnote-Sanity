@@ -1,25 +1,43 @@
 ---
+import { loadQuery } from "../sanity/lib/load-query";
 import { Image } from 'astro:assets';
 
-// Accept the logo url as a prop
+// Fetch dynamic footer logo
+const query = `{
+  "settings": *[_id == "siteSettings"][0]{
+    "footerLogoUrl": footerLogo.asset->url
+  }
+}`;
+
+const { data: { settings } } = await loadQuery<any>({ query });
+
+// Accept the logo url as a prop from the parent page
 const { logoUrl } = Astro.props;
 
-// Set a default fallback image if the CMS field is empty
-const defaultLogo = "/assets/images/footer-logo.svg";
-const finalLogo = logoUrl || defaultLogo;
+// Set a default fallback image path pointing directly to the public folder
+const finalLogo = logoUrl || settings?.footerLogoUrl || "/assets/images/footer-logo.svg";
+
+// Astro's <Image> cannot process SVGs, and the local fallback lives in /public
+// (already optimised, nothing to transform). Only hand remote raster images to
+// <Image>; everything else renders as a plain <img>.
+const optimizable = finalLogo.startsWith("http") && !finalLogo.endsWith(".svg");
 ---
 
 <footer class="footer-component u-spacing-inline">
   <div class="container cc-1040">
     <div class="footer-content u-display-flex">
       <div class="footer-logo-block u-display-flex">
-        <Image 
+        {optimizable ? (
+          <Image 
             src={finalLogo}
             width={16}
             height={16}
             loading="lazy"
             alt="Dropnote Logo"
           />
+        ) : (
+          <img src={finalLogo} width="16" height="16" loading="lazy" alt="Dropnote Logo" />
+        )}
         <div class="text-sm text-sm">2026 Dropnote LLC</div>
       </div>
       <div role="list" class="footer-social-block u-display-flex">

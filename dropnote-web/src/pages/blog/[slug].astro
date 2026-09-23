@@ -29,24 +29,17 @@ const query = `{
     body,
     "imageUrl": mainImage.asset->url,
     "author": author->{ name, "imageUrl": image.asset->url }
-  },
-  "settings": *[_type == "siteSettings"][0]{
-    "navbarLogoUrl": navbarLogo.asset->url,
-    "footerLogoUrl": footerLogo.asset->url
   }
 }`;
 
-const { data } = await loadQuery<any>({ 
+const { data: { post } } = await loadQuery<any>({ 
   query, 
   params: { slug } 
 });
-
-const post = data?.post;
-const settings = data?.settings || {};
 ---
 
 <Layout>
-  <Navbar logoUrl={settings?.navbarLogoUrl} />
+  <Navbar />
 
   {post && (
     <article class="blog-detail u-spacing-block">
@@ -114,7 +107,7 @@ const settings = data?.settings || {};
     </article>
   )}
 
-  <Footer logoUrl={settings?.footerLogoUrl} />
+  <Footer />
 </Layout>
 
 <style>

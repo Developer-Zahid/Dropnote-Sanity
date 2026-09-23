@@ -1,8 +1,10 @@
 import { defineField, defineType } from "sanity";
+import { EditIcon } from '@sanity/icons/Edit'
 
 export const postType = defineType({
   name: "post",
-  title: "Blog Post",
+  title: "Blog Posts",
+  icon: EditIcon,
   type: "document",
   fields: [
     defineField({

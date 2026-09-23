@@ -18,3 +18,4 @@ All commands are run from the root of the project, from a terminal:
 - [Join the Sanity community](https://www.sanity.io/community/join?utm_source=readme)
 - [Extend and build plugins](https://www.sanity.io/docs/content-studio/extending?utm_source=readme)
 - [Build your blog with Astro and Sanity](https://www.sanity.io/docs/developer-guides/sanity-astro-blog)
+- [Sanity icons link](https://icons.sanity.build/?view=list&query=)

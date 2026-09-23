@@ -7,8 +7,8 @@ import { postType } from "./post";
 
 // We merge your existing schemas with the new blog schemas
 export const schemaTypes = [
-  homePageType,
   siteSettingsType,
+  homePageType,
   authorType,
   blockContentType,
   categoryType,

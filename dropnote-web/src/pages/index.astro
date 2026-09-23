@@ -13,71 +13,63 @@ import Footer from '../components/Footer.astro';
 
 // Expanded GROQ Query mapping to fetch both Landing Page AND Site Settings!
 const query = `{
-  "pageData": *[_type == "homePage"][0]{
-    title,
-    seo {
-      metaTitle,
-      metaDescription,
-      "ogImageUrl": openGraphImage.asset->url
+  "pageData": *[_id == "homePage"][0]{
+    metaTitle,
+    metaDescription,
+    "ogImageUrl": openGraphImage.asset->url,
+    sectionHero {
+      eyebrow, heading, subheading, ctaText,
+      "imageUrl": heroImage.asset->url
     },
-    pageContent {
-      hero {
-        eyebrow, heading, subheading, ctaText,
-        "imageUrl": heroImage.asset->url
-      },
-      features {
-        eyebrow, heading,
-        featureCards[]{
-          title, description, linkText,
-          "iconUrl": icon.asset->url
-        }
-      },
-      highlight {
-        eyebrow, heading,
-        "imageUrl": featureImage.asset->url
-      },
-      integrations {
-        eyebrow, heading,
-        integrationCards[]{
-          name, description,
-          "logoUrl": logo.asset->url
-        }
-      },
-      bottomCta {
-        heading, subheading, ctaText
+    sectionFeatures {
+      eyebrow, heading,
+      featureCards[]{
+        title,
+        description,
+        linkText,
+        "iconUrl": icon.asset->url
       }
+    },
+    sectionHighlight {
+      eyebrow,
+      heading,
+      "imageUrl": featureImage.asset->url
+    },
+    sectionIntegrations {
+      eyebrow, heading,
+      integrationCards[]{
+        name, description,
+        "logoUrl": logo.asset->url
+      }
+    },
+    sectionBottomCta {
+      heading,
+      subheading,
+      ctaText
     }
-  },
-  "settings": *[_type == "siteSettings"][0]{
-    "faviconUrl": favicon.asset->url,
-    "navbarLogoUrl": navbarLogo.asset->url,
-    "footerLogoUrl": footerLogo.asset->url
   }
 }`;
 
-const { data } = await loadQuery<any>({ query });
-const pageData = data.pageData;
-const settings = data.settings || {};
+const { data: { pageData } } = await loadQuery<any>({ query });
 ---
 
 <!DOCTYPE html>
 <Layout
-  title={pageData?.seo?.metaTitle || pageData?.title}
-  description={pageData?.seo?.metaDescription}
-  ogImage={pageData?.seo?.ogImageUrl}
-  faviconUrl={settings.faviconUrl}
+  metaTitle={pageData?.metaTitle}
+  metaDescription={pageData?.metaDescription}
+  openGraphImage={pageData?.ogImageUrl}
 >
-    <Navbar logoUrl={settings.navbarLogoUrl} />
+    <Navbar />
     <main class="main">
-      {pageData?.pageContent?.hero && <Hero hero={pageData.pageContent.hero} />}
+      {pageData?.sectionHero && <Hero hero={pageData.sectionHero} />}
       
-      {pageData?.pageContent?.features && <Features features={pageData.pageContent.features} />}
+      {pageData?.sectionFeatures && <Features features={pageData.sectionFeatures} />}
       
-      {pageData?.pageContent?.highlight && <Spotlight highlight={pageData.pageContent.highlight} />}
+      {pageData?.sectionHighlight && <Spotlight highlight={pageData.sectionHighlight} />}
       
-      {pageData?.pageContent?.integrations && <Integrations integrations={pageData.pageContent.integrations} />}
+      {pageData?.sectionIntegrations && <Integrations integrations={pageData.sectionIntegrations} />}
       
-      {pageData?.pageContent?.bottomCta && <BottomCta bottomCta={pageData.pageContent.bottomCta} />}
+      {pageData?.sectionBottomCta && <BottomCta bottomCta={pageData.sectionBottomCta} />}
     </main>
-    <Footer logoUrl={settings.footerLogoUrl} />
+    <Footer />
 </Layout>

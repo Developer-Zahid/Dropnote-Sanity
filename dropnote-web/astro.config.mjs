@@ -21,14 +21,14 @@ export default defineConfig({
     },
     vite: {
         optimizeDeps: {
-        include: [
-            "react/compiler-runtime",
-            "lodash/isObject.js",
-            "lodash/groupBy.js",
-            "lodash/keyBy.js",
-            "lodash/partition.js",
-            "lodash/sortedIndex.js",
-        ],
+            include: [
+                "react/compiler-runtime",
+                "lodash/isObject.js",
+                "lodash/groupBy.js",
+                "lodash/keyBy.js",
+                "lodash/partition.js",
+                "lodash/sortedIndex.js",
+            ],
         },
   },
 });

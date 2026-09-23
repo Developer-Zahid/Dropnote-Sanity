@@ -29,7 +29,7 @@ export const resolve: PresentationPluginOptions["resolve"] = {
             href: `/blog/${doc?.slug}`,
           },
           {
-            title: "Blog Archive",
+            title: "Blog",
             href: "/blog",
           },
         ],
