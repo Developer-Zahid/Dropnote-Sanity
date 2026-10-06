@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Two independent npm packages (no root package.json / workspace) — run commands inside each folder:
 
-- `dropnote-cms/` — Sanity Studio v6 (project `fsaqqobg`, dataset `production`)
-- `dropnote-web/` — Astro 7 static site (SSG, no adapter; deployed to Cloudflare Pages) that reads from Sanity
+- `dropnote-cms/` — Sanity Studio v5 (project `fsaqqobg`, dataset `production`)
+- `dropnote-web/` — Astro 6 static site (SSG, no adapter; deployed to Cloudflare Pages) that reads from Sanity
 
 ## Commands
 
