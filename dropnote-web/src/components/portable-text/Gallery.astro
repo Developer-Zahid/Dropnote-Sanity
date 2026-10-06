@@ -1,0 +1,65 @@
+---
+import { stegaClean } from "@sanity/client/stega";
+import { urlForImage } from "../../sanity/lib/url-for-image";
+
+const { node } = Astro.props;
+const columns = Number(stegaClean(node.columns)) || 2;
+const images = (node.images ?? []).filter((image: any) => image?.asset);
+---
+
+<figure class="pt-gallery">
+  <div class="pt-gallery__grid" style={`--columns: ${columns}`}>
+    {images.map((image: any) => (
+      <figure class="pt-gallery__item">
+        <img
+          src={urlForImage(image).width(800).height(600).fit("crop").auto("format").url()}
+          srcset={`${urlForImage(image).width(400).height(300).fit("crop").auto("format").url()} 400w, ${urlForImage(image).width(800).height(600).fit("crop").auto("format").url()} 800w`}
+          sizes={`(max-width: 767px) 100vw, ${Math.round(740 / columns)}px`}
+          alt={image.alt ?? ""}
+          width="800"
+          height="600"
+          loading="lazy"
+          decoding="async"
+        />
+        {image.caption && <figcaption>{image.caption}</figcaption>}
+      </figure>
+    ))}
+  </div>
+  {node.caption && <figcaption class="pt-gallery__caption">{node.caption}</figcaption>}
+</figure>
+
+<style>
+  .pt-gallery {
+    margin: 2rem 0;
+  }
+  .pt-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .pt-gallery__item {
+    margin: 0;
+  }
+  .pt-gallery__item img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    display: block;
+  }
+  figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--neutral--light-gray);
+  }
+  .pt-gallery__caption {
+    text-align: center;
+    margin-top: 0.75rem;
+  }
+  @media (max-width: 767px) {
+    .pt-gallery__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

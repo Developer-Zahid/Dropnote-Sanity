@@ -1,0 +1,22 @@
+---
+import { stegaClean } from "@sanity/client/stega";
+
+// Renders both "link" (external URL) and "internalLink" (reference to a post) annotations.
+// stegaClean strips Visual Editing's invisible markers so they never end up inside an href.
+const { node } = Astro.props;
+const def = node.markDef ?? {};
+
+const href =
+  node.markType === "internalLink"
+    ? def.slug && `/blog/${stegaClean(def.slug)}`
+    : stegaClean(def.href);
+
+const newTab = def.openInNewTab === true;
+const rel = [newTab && "noopener noreferrer", def.nofollow && "nofollow"].filter(Boolean).join(" ");
+---
+
+{href ? (
+  <a href={href} target={newTab ? "_blank" : undefined} rel={rel || undefined}><slot /></a>
+) : (
+  <slot />
+)}

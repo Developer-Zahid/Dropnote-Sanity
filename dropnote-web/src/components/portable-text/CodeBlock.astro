@@ -1,0 +1,112 @@
+---
+import { Code } from "astro:components";
+import type { ShikiTransformer } from "shiki";
+import { stegaClean } from "@sanity/client/stega";
+
+// Renders the @sanity/code-input value: { code, language, filename, highlightedLines }
+const { node } = Astro.props;
+
+const code: string = stegaClean(node.code) ?? "";
+const filename: string | undefined = stegaClean(node.filename);
+const language: string = stegaClean(node.language) || "text";
+
+// code-input language values that Shiki names differently. Anything Shiki doesn't
+// bundle (e.g. GROQ) falls back to plain text — <Code> throws on unknown languages.
+const LANGUAGE_ALIASES: Record<string, string> = {
+  batchfile: "bat",
+  golang: "go",
+  mysql: "sql",
+  sh: "bash",
+  text: "plaintext",
+};
+const SUPPORTED = new Set([
+  "bat", "csharp", "css", "go", "html", "java", "javascript", "json", "jsx", "markdown", "php",
+  "python", "ruby", "sass", "scss", "bash", "sql", "tsx", "typescript", "xml", "yaml", "plaintext",
+]);
+const aliased = LANGUAGE_ALIASES[language] ?? language;
+const lang = SUPPORTED.has(aliased) ? aliased : "plaintext";
+
+const highlighted = new Set<number>(node.highlightedLines ?? []);
+const transformers: ShikiTransformer[] = [
+  {
+    name: "highlight-lines",
+    line(hast, line) {
+      if (highlighted.has(line)) this.addClassToHast(hast, "is-highlighted");
+    },
+  },
+];
+---
+
+<figure class="pt-code">
+  <figcaption class="pt-code__header">
+    <span class="pt-code__filename">{filename || (lang === "plaintext" ? "" : lang)}</span>
+    <button type="button" class="pt-code__copy" data-code={code} aria-label="Copy code to clipboard">Copy</button>
+  </figcaption>
+  <Code code={code} lang={lang as any} theme="github-dark" transformers={transformers} />
+</figure>
+
+<script>
+  document.addEventListener("click", async (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>(".pt-code__copy");
+    if (!button) return;
+    try {
+      await navigator.clipboard.writeText(button.dataset.code ?? "");
+      button.textContent = "Copied!";
+    } catch {
+      button.textContent = "Press Ctrl+C";
+    }
+    setTimeout(() => (button.textContent = "Copy"), 2000);
+  });
+</script>
+
+<style>
+  .pt-code {
+    margin: 2rem 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: #24292e;
+  }
+  .pt-code__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #1b1f23;
+    font-size: 0.8125rem;
+    color: #c9d1d9;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .pt-code__copy {
+    padding: 0.25rem 0.625rem;
+    border: 1px solid #3a4048;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: #c9d1d9;
+    font: inherit;
+    cursor: pointer;
+  }
+  .pt-code__copy:hover,
+  .pt-code__copy:focus-visible {
+    background: #30363d;
+  }
+  .pt-code :global(pre) {
+    margin: 0;
+    padding: 1rem 0;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .pt-code :global(pre code) {
+    display: block;
+    min-width: max-content;
+  }
+  .pt-code :global(.line) {
+    display: inline-block;
+    width: 100%;
+    padding: 0 1rem;
+  }
+  .pt-code :global(.line.is-highlighted) {
+    background: rgba(39, 133, 239, 0.18);
+    box-shadow: inset 3px 0 0 var(--neutral--primary-blue);
+  }
+</style>

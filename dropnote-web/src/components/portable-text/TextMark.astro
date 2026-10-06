@@ -1,0 +1,14 @@
+---
+// Custom decorators that astro-portabletext doesn't render out of the box.
+const { node } = Astro.props;
+---
+
+{node.markType === "highlight" ? (
+  <mark class="pt-highlight"><slot /></mark>
+) : node.markType === "sup" ? (
+  <sup><slot /></sup>
+) : node.markType === "sub" ? (
+  <sub><slot /></sub>
+) : (
+  <slot />
+)}

@@ -1,24 +1,54 @@
 ---
-import { urlForImage } from "../sanity/lib/url-for-image";
+import { stegaClean } from "@sanity/client/stega";
+import { getImageDimensions, urlForImage } from "../sanity/lib/url-for-image";
 
-const { asset, alt } = Astro.props.node;
+const { node } = Astro.props;
 
-// Generate optimized versions of the uploaded rich text images
-const url = urlForImage(asset).url();
-const webpUrl = urlForImage(asset).format("webp").url();
+// Size controls how far the image may break out of the text column.
+const size = stegaClean(node.size) || "normal";
+const maxWidth = size === "full" ? 1600 : size === "wide" ? 1040 : 740;
+
+const dimensions = getImageDimensions(node);
+const width = Math.min(maxWidth, dimensions?.width ?? maxWidth);
+const height = dimensions ? Math.round((width * dimensions.height) / dimensions.width) : undefined;
+
+// auto("format") lets the Sanity CDN serve AVIF/WebP when the browser supports it
+const src = urlForImage(node).width(width).auto("format").url();
+const srcset = [1, 2]
+  .map((density) => `${urlForImage(node).width(width * density).auto("format").url()} ${density}x`)
+  .join(", ");
 ---
 
-<picture class="portable-text-picture">
-  <source srcset={webpUrl} type="image/webp" />
-  <img src={url} alt={alt || "Blog content illustration"} loading="lazy" />
-</picture>
+<figure class={`portable-text-figure is-${size}`}>
+  <img src={src} srcset={srcset} alt={node.alt ?? ""} width={width} height={height} loading="lazy" decoding="async" />
+  {node.caption && <figcaption>{node.caption}</figcaption>}
+</figure>
 
 <style>
-  .portable-text-picture img {
+  .portable-text-figure {
+    margin: 2rem 0;
+  }
+  .portable-text-figure img {
     width: 100%;
     height: auto;
     border-radius: 0.5rem;
-    margin: 2rem 0;
     display: block;
+  }
+  .portable-text-figure.is-wide {
+    width: min(1040px, calc(100vw - 2rem));
+    margin-inline: calc((100% - min(1040px, calc(100vw - 2rem))) / 2);
+  }
+  .portable-text-figure.is-full {
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+  }
+  .portable-text-figure.is-full img {
+    border-radius: 0;
+  }
+  figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--neutral--light-gray);
+    text-align: center;
   }
 </style>

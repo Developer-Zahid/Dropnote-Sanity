@@ -1,14 +1,36 @@
 ---
 import { PortableText as PortableTextInternal } from 'astro-portabletext';
 import PortableTextImage from "./PortableTextImage.astro";
+import Button from "./portable-text/Button.astro";
+import Callout from "./portable-text/Callout.astro";
+import CodeBlock from "./portable-text/CodeBlock.astro";
+import CtaBlock from "./portable-text/CtaBlock.astro";
+import DataTable from "./portable-text/DataTable.astro";
+import Divider from "./portable-text/Divider.astro";
+import Gallery from "./portable-text/Gallery.astro";
+import HtmlEmbed from "./portable-text/HtmlEmbed.astro";
+import RelatedPosts from "./portable-text/RelatedPosts.astro";
+import VideoEmbed from "./portable-text/VideoEmbed.astro";
+import { markComponents } from "./portable-text/marks";
 
 const { portableText } = Astro.props;
 
-// Connect custom PortableText schema elements (like custom images) to Astro components
+// Map each custom block type from the Sanity "blockContent" schema to its Astro component
 const components = {
   type: {
     image: PortableTextImage,
-  }
+    gallery: Gallery,
+    videoEmbed: VideoEmbed,
+    callout: Callout,
+    button: Button,
+    ctaBlock: CtaBlock,
+    dataTable: DataTable,
+    divider: Divider,
+    code: CodeBlock,
+    htmlEmbed: HtmlEmbed,
+    relatedPosts: RelatedPosts,
+  },
+  mark: markComponents,
 };
 ---
 
@@ -23,22 +45,78 @@ const components = {
     margin-bottom: 1.5rem;
     color: var(--neutral--light-gray);
   }
+  .rich-text-content h1,
   .rich-text-content h2,
   .rich-text-content h3,
-  .rich-text-content h4 {
+  .rich-text-content h4,
+  .rich-text-content h5,
+  .rich-text-content h6 {
     color: var(--brand--heading);
     font-weight: 600;
     margin-top: 2.5rem;
     margin-bottom: 1rem;
     letter-spacing: -0.02em;
   }
+  .rich-text-content h1 { font-size: 2.25rem; }
   .rich-text-content h2 { font-size: 1.875rem; }
   .rich-text-content h3 { font-size: 1.5rem; }
+  .rich-text-content h4 { font-size: 1.25rem; }
+  .rich-text-content h5 { font-size: 1.125rem; }
+  .rich-text-content h6 {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
   .rich-text-content blockquote {
     border-left: 4px solid var(--neutral--primary-blue);
     padding-left: 1.5rem;
     margin: 2rem 0;
     font-style: italic;
     color: var(--neutral--dark);
+  }
+  .rich-text-content ul,
+  .rich-text-content ol {
+    margin: 0 0 1.5rem;
+    padding-left: 1.5rem;
+    color: var(--neutral--light-gray);
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+  .rich-text-content ul { list-style: disc; }
+  .rich-text-content ol { list-style: decimal; }
+  .rich-text-content li { margin-bottom: 0.5rem; }
+  .rich-text-content li > ul,
+  .rich-text-content li > ol {
+    margin: 0.5rem 0 0;
+  }
+  .rich-text-content a:not(.button) {
+    color: var(--neutral--navy-blue);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+  .rich-text-content a:not(.button):hover {
+    color: var(--neutral--primary-blue);
+  }
+  .rich-text-content :not(pre) > code {
+    padding: 0.125em 0.375em;
+    border-radius: 0.25rem;
+    background: var(--neutral--flash-white);
+    color: var(--neutral--midnight-blue);
+    font-size: 0.9em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .rich-text-content .pt-highlight {
+    background: #fff3a3;
+    color: inherit;
+    padding: 0 0.125em;
+    border-radius: 0.125rem;
+  }
+  .rich-text-content del {
+    text-decoration-thickness: 0.08em;
+  }
+  .rich-text-content sup,
+  .rich-text-content sub {
+    font-size: 0.75em;
+    line-height: 0;
   }
 </style>

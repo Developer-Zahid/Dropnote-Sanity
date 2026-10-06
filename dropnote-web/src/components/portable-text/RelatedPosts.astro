@@ -1,0 +1,95 @@
+---
+import { stegaClean } from "@sanity/client/stega";
+import { urlForImage } from "../../sanity/lib/url-for-image";
+
+// Posts are dereferenced in the [slug].astro GROQ query: posts[]->{ title, slug, excerpt, mainImage }
+const { node } = Astro.props;
+const posts = (node.posts ?? []).filter((post: any) => post?.slug);
+---
+
+{posts.length > 0 && (
+  <aside class="pt-related" aria-labelledby={`related-${node._key}`}>
+    <h2 id={`related-${node._key}`} class="pt-related__title">{node.title || "Related articles"}</h2>
+    <ul class="pt-related__grid" role="list">
+      {posts.map((post: any) => (
+        <li class="pt-related__card">
+          <a href={`/blog/${stegaClean(post.slug)}`}>
+            {post.mainImage?.asset && (
+              <img
+                src={urlForImage(post.mainImage).width(480).height(270).fit("crop").auto("format").url()}
+                alt=""
+                width="480"
+                height="270"
+                loading="lazy"
+                decoding="async"
+              />
+            )}
+            <span class="pt-related__card-title">{post.title}</span>
+            {post.excerpt && <span class="pt-related__card-excerpt">{post.excerpt}</span>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
+
+<style>
+  .pt-related {
+    margin: 3rem 0;
+  }
+  .pt-related__title {
+    font-size: 1.25rem;
+    margin: 0 0 1rem;
+    color: var(--brand--heading);
+  }
+  .pt-related__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .pt-related__card a {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--neutral--primary-50);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--neutral--white);
+    text-decoration: none;
+    transition: box-shadow 0.2s ease;
+  }
+  .pt-related__card a:hover,
+  .pt-related__card a:focus-visible {
+    box-shadow: 0 10px 30px rgba(15, 106, 209, 0.1);
+  }
+  .pt-related__card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+  .pt-related__card-title {
+    padding: 1rem 1rem 0.25rem;
+    font-weight: 600;
+    color: var(--brand--heading);
+    line-height: 1.35;
+  }
+  .pt-related__card-excerpt {
+    padding: 0 1rem 1rem;
+    font-size: 0.875rem;
+    color: var(--neutral--light-gray);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-related__card a {
+      transition: none;
+    }
+  }
+</style>
