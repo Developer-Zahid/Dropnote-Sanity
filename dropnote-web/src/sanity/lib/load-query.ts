@@ -1,4 +1,4 @@
-import { type QueryParams } from "sanity";
+import type { QueryParams } from "@sanity/client";
 import { sanityClient } from "sanity:client";
 
 const visualEditingEnabled =

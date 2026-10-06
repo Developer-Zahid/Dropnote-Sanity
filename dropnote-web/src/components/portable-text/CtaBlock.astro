@@ -1,0 +1,33 @@
+---
+import { stegaClean } from "@sanity/client/stega";
+
+// Compact version of the home page's bottom CTA (same .cta-* styles from global.css).
+const { node } = Astro.props;
+const href = stegaClean(node.buttonHref) || "/#join-the-waitlist";
+---
+
+<section class="pt-cta cta-component">
+  <div class="cta-content u-text-center u-display-flex-vertical">
+    <h2 class="cta-title u-text-wrap-balance heading-h3">{node.heading}</h2>
+    {node.text && <p class="cta-text text-md">{node.text}</p>}
+    <a href={href} class="button cc-primary">{node.buttonText || "Join the waitlist"}</a>
+  </div>
+</section>
+
+<style>
+  .pt-cta {
+    margin: 3rem 0;
+    padding: clamp(2.5rem, 4vw, 4rem) 1.5rem;
+  }
+  .pt-cta .cta-title {
+    margin-top: 0;
+  }
+  .pt-cta .cta-text {
+    margin-bottom: 1.5rem;
+    color: var(--neutral--primary-50);
+  }
+  .pt-cta .button {
+    color: var(--neutral--white);
+    text-decoration: none;
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+import { stegaClean } from "@sanity/client/stega";
+
+const { node } = Astro.props;
+const href = stegaClean(node.href);
+const variant = stegaClean(node.variant) === "secondary" ? "cc-secondary" : "cc-primary";
+const align = stegaClean(node.align) === "center" ? "center" : "left";
+const newTab = node.openInNewTab === true;
+---
+
+{href && (
+  <p class={`pt-button is-${align}`}>
+    <a
+      href={href}
+      class={`button ${variant}`}
+      target={newTab ? "_blank" : undefined}
+      rel={newTab ? "noopener noreferrer" : undefined}
+    >{node.text}</a>
+  </p>
+)}
+
+<style>
+  .pt-button {
+    margin: 2rem 0;
+  }
+  .pt-button.is-center {
+    text-align: center;
+  }
+  .pt-button a {
+    display: inline-flex;
+    color: var(--neutral--white);
+    text-decoration: none;
+  }
+</style>

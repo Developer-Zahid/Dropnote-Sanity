@@ -1,0 +1,76 @@
+---
+import { stegaClean } from "@sanity/client/stega";
+
+const { node } = Astro.props;
+
+// Turn a YouTube/Vimeo page URL into its privacy-friendly embed URL.
+function toEmbedUrl(raw: string | undefined) {
+  if (!raw) return undefined;
+  try {
+    const url = new URL(raw);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host === "youtu.be" || host.endsWith("youtube.com") || host === "youtube-nocookie.com") {
+      const id =
+        host === "youtu.be"
+          ? url.pathname.slice(1)
+          : url.pathname === "/watch"
+            ? url.searchParams.get("v")
+            : url.pathname.match(/^\/(?:embed|shorts|live)\/([^/?]+)/)?.[1];
+      return id ? `https://www.youtube-nocookie.com/embed/${id}` : undefined;
+    }
+
+    if (host.endsWith("vimeo.com")) {
+      // vimeo.com/123456789 or vimeo.com/123456789/<hash> (unlisted) or player.vimeo.com/video/123456789
+      const [, id, hash] = url.pathname.match(/(?:\/video)?\/(\d+)(?:\/([a-z0-9]+))?/) ?? [];
+      return id ? `https://player.vimeo.com/video/${id}${hash ? `?h=${hash}` : ""}` : undefined;
+    }
+  } catch {}
+  return undefined;
+}
+
+const url = stegaClean(node.url);
+const embedUrl = toEmbedUrl(url);
+---
+
+{embedUrl ? (
+  <figure class="pt-video">
+    <div class="pt-video__frame">
+      <iframe
+        src={embedUrl}
+        title={node.title || "Embedded video"}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+    </div>
+    {node.caption && <figcaption>{node.caption}</figcaption>}
+  </figure>
+) : url && (
+  <p><a href={url}>{node.title || url}</a></p>
+)}
+
+<style>
+  .pt-video {
+    margin: 2rem 0;
+  }
+  .pt-video__frame {
+    aspect-ratio: 16 / 9;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--neutral--800);
+  }
+  .pt-video__frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--neutral--light-gray);
+    text-align: center;
+  }
+</style>

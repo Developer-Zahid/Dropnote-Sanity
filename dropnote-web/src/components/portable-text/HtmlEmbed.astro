@@ -1,0 +1,18 @@
+---
+import { stegaClean } from "@sanity/client/stega";
+
+// Raw HTML from the "Code embed" block, output as-is (scripts included) — editors are trusted.
+// stegaClean is essential here: Visual Editing markers would otherwise corrupt the markup.
+const { node } = Astro.props;
+const html: string = stegaClean(node.code?.code) ?? "";
+---
+
+{html && <div class="pt-embed" set:html={html} />}
+
+<style>
+  .pt-embed {
+    margin: 2rem 0;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+</style>

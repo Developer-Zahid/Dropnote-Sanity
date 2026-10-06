@@ -26,7 +26,21 @@ const query = `{
     title,
     publishedAt,
     excerpt,
-    body,
+    // Resolve references the rich text needs: internal link slugs (incl. inside callouts)
+    // and the posts pulled in by "Related posts" blocks.
+    "body": body[]{
+      ...,
+      "markDefs": markDefs[]{..., _type == "internalLink" => {"slug": reference->slug.current}},
+      _type == "callout" => {
+        "body": body[]{
+          ...,
+          "markDefs": markDefs[]{..., _type == "internalLink" => {"slug": reference->slug.current}}
+        }
+      },
+      _type == "relatedPosts" => {
+        "posts": posts[]->{_id, title, "slug": slug.current, excerpt, mainImage}
+      }
+    },
     "imageUrl": mainImage.asset->url,
     "author": author->{ name, "imageUrl": image.asset->url }
   }
@@ -113,6 +127,8 @@ const { data: { post } } = await loadQuery<any>({
 <style>
   .blog-detail {
     background-color: #ffffff;
+    /* Wide/full-width body images break out of the text column */
+    overflow-x: clip;
   }
   .back-link {
     color: var(--neutral--navy-blue);

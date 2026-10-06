@@ -1,0 +1,64 @@
+---
+// Renders the @sanity/table value: { rows: [{ _key, cells: string[] }] }
+const { node } = Astro.props;
+const rows: { _key: string; cells?: string[] }[] = node.table?.rows ?? [];
+const hasHeader = node.hasHeaderRow !== false && rows.length > 1;
+const [headerRow, ...bodyRows] = hasHeader ? rows : [undefined, ...rows];
+---
+
+{rows.length > 0 && (
+  <div class="pt-table" role="region" aria-label={node.caption || "Table"} tabindex="0">
+    <table>
+      {node.caption && <caption>{node.caption}</caption>}
+      {headerRow && (
+        <thead>
+          <tr>{headerRow.cells?.map((cell) => <th scope="col">{cell}</th>)}</tr>
+        </thead>
+      )}
+      <tbody>
+        {bodyRows.map((row) => (
+          <tr>{row?.cells?.map((cell) => <td>{cell}</td>)}</tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+<style>
+  .pt-table {
+    margin: 2rem 0;
+    overflow-x: auto;
+    border: 1px solid var(--neutral--nutral-50);
+    border-radius: 0.5rem;
+  }
+  .pt-table:focus-visible {
+    outline: 2px solid var(--neutral--primary-blue);
+    outline-offset: 2px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+  }
+  caption {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--brand--heading);
+  }
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-top: 1px solid var(--neutral--nutral-50);
+    vertical-align: top;
+  }
+  th {
+    background: var(--neutral--white-smoke);
+    color: var(--brand--heading);
+    font-weight: 600;
+  }
+  td {
+    color: var(--neutral--dark);
+  }
+</style>
