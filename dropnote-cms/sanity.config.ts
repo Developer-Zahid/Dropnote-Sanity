@@ -3,6 +3,7 @@ import { structureTool } from 'sanity/structure'
 import { presentationTool } from "sanity/presentation";
 import { codeInput } from '@sanity/code-input'
 import { table } from '@sanity/table'
+import { visionTool } from '@sanity/vision'
 import { schemaTypes } from './schemaTypes'
 import { structure } from './structure'
 import { resolve } from './src/sanity/lib/resolve'
@@ -20,6 +21,8 @@ export default defineConfig({
       resolve,
       previewUrl: 'http://localhost:4321',
     }),
+    // GROQ query playground; same API version as dropnote-web/astro.config.mjs
+    visionTool({ defaultApiVersion: '2026-05-18' }),
     codeInput(),
     table(),
   ],
